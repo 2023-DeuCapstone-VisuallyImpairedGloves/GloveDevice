@@ -9,7 +9,7 @@
 BluetoothSerial SerialBT;
 int default_distance = 900;
 OneButton button(NAV_BUTTON, true); 
-byte button_mode = 0;
+byte button_mode = 1;
 byte button_start = 0;
 byte default_button;
 
@@ -78,6 +78,9 @@ void btCallback(esp_spp_cb_event_t event, esp_spp_cb_param_t *param){
         Vibration(STAIR_DOWNHILL);
       break;
      default:
+      if(paramInt > 500){
+        default_distance = paramInt;
+      }
      break;
     }
     Serial.printf("paramInt: %d\n", paramInt);
@@ -206,8 +209,8 @@ int ReadDistance()
     distance=distance<<8;
     distance|=i2c_rx_buf[1];
  
-    //300ms 대기
-    delay(300); 
+    //50ms 대기
+    delay(50); 
     return distance;
 }
 
@@ -363,7 +366,7 @@ int chkButton (void){
     if (LOW == but)  {   // press
       if (msecLst)  { // 2nd press
         msecLst = 0;
-        return DoubleClick;
+        return YesSingle;
       }
       else {
         msecLst = 0 == msec ? 1 : msec;
@@ -390,7 +393,7 @@ void additionalTask1( void * parameter )
 
     case DoubleClick:
       Serial.println ("Its double");
-      doubleClick();
+      //doubleClick();
       break;
 
     //GERRY MOD
